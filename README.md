@@ -1,8 +1,8 @@
 # BASIS
 BASIS is an open source library designed to simplify working with DOM. All functions were included to Document and Element prototypes in order to beaytify your code, ;)
 
-#Prototypes of methods
-######Document.prototype.newElement
+# Prototypes of methods
+###### Document.prototype.newElement
 Creates a DOM-Element, may take different params:
     
     @param {String} type - string with tag name
@@ -25,31 +25,31 @@ Moreover, you can pass an object of event listeners or an array of CSS classes h
     
     var child1 = document.newElement("div", {"width": "100px", "height": "100px", "eventListeners": eventListeners, "classList": classList});
 
-######Element.prototype.newElement
+###### Element.prototype.newElement
 As like as the previous one, but appends a generated element to element from which method was called.
 
-######Element.prototype.setEventListeners
+###### Element.prototype.setEventListeners
 Appends event listeners to element from which was callled.
 
     @param {Object} eventListeners - object of listeners, see the previous example for symtax.
 
-######Element.prototype.setAttributes
+###### Element.prototype.setAttributes
 Appends attributes to element from which was callled. If you passed attrobute with value null or undefined, BASIS will remove it from element.
 
     @param {Object} attributes - object of attributes, see symtax is same as in the first example.
 
-######Element.prototype.setCSS
+###### Element.prototype.setCSS
 Appends a CSS classes to element from which was called.
 
     @param {Array} CSSclasses - array of CSS classes in strings.
 
-######Element.prototype.appendChildren
+###### Element.prototype.appendChildren
 Appends children. May take array or just arguments of Element type.
 In this example all children will be appended:
 
     parent.appendChildren(child1, [child2, child3, [child4], child5], child6);
 
-######Element.prototype.setProperties
+###### Element.prototype.setProperties
 Sets properties to element from which was called.
 
     @param {Object} - parameters of an element, syntax is equal to second parameter of Document.prototype.newElement
