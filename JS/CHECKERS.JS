@@ -1,6 +1,16 @@
+function isFunction(element)
+{
+    return element instanceof Function;
+}
+
 function isArray(element)
 {
     return element instanceof Array;
+}
+
+function isObject(element)
+{
+    return element instanceof Object;
 }
 
 function isElement(element)
