@@ -1,6 +1,16 @@
+function isFunction(element)
+{
+    return element instanceof Function;
+}
+
 function isArray(element)
 {
     return element instanceof Array;
+}
+
+function isObject(element)
+{
+    return element instanceof Object;
 }
 
 function isElement(element)
@@ -17,6 +27,7 @@ function isString(element)
 {
     return typeof element == "string";
 }
+
 /*
  * Sets event listeners to DOM-Element
  *
@@ -24,53 +35,112 @@ function isString(element)
  */
 Element.prototype.setEventListeners = function(eventListeners)
 {
-    if (!eventListeners)
+    if (!eventListeners || !isObject(eventListeners))
     {
+        console.warn("ERROR: argument passed to setEventListeners method is not an Object. Skipping.");
         return;
     }
 
 	for (var event in eventListeners)
 	{
+        if (!isArray(eventListeners[event]))
+        {
+            eventListeners[event] = [eventListeners[event]];
+        }
+
 		eventListeners[event].forEach
 		(
 			(function(eventListener)
 			{
+                if (!isFunction(eventListener))
+                {
+                    console.warn("ERROR: cannot set something except Function as an event listener to event, called \"" + event + "\". Skipping.");
+                    return;
+                }
 				this.addEventListener(event, eventListener);
 			}).bind(this)
 		);
 	}
 };
 
-Element.prototype.setCSS = function(classes)
+Element.prototype.removeCSS = function()
 {
-    if (!classes)
-    {
-        return;
-    }
-
-	classes.forEach
+    Array.from(arguments).forEach
 	(
 		(function(CSSclass)
 		{
-			this.classList.add(CSSclass);
+            if (isString(CSSclass))
+			{
+                this.classList.remove(CSSclass);
+            }
+            else if (isArray(CSSclass))
+            {
+                this.setCSS.apply(this, CSSclass);
+            }
+            else
+            {
+                console.warn("ERROR: cannot remove something except String as an CSS-class. Skipping.");
+            }
+		}).bind(this)
+	);
+}
+
+Element.prototype.setCSS = function()
+{
+	Array.from(arguments).forEach
+	(
+		(function(CSSclass)
+		{
+            if (isString(CSSclass))
+			{
+                this.classList.add(CSSclass);
+            }
+            else if (isArray(CSSclass))
+            {
+                this.setCSS.apply(this, CSSclass);
+            }
+            else
+            {
+                console.warn("ERROR: cannot set something except String as an CSS-class. Skipping.");
+            }
 		}).bind(this)
 	);
 };
 
 Element.prototype.setAttributes = function(attributes)
 {
+    if (!isObject(attributes))
+    {
+        console.warn("ERROR: argument passed to setAttributes method is not an Object. Skipping.");
+        return;
+    }
+
 	for (var attribute in attributes)
 	{
 		attributes[attribute] ? this.setAttribute(attribute, attributes[attribute]) : this.removeAttribute(attribute);
 	}
 };
 
-Element.prototype.removeAttributes = function(attributes)
+Element.prototype.removeAttributes = function()
 {
-    for (var attribute in attributes)
-    {
-        this.removeAttributes(attribute);
-    }
+    Array.from(arguments).forEach
+    (
+        (function(attribute)
+        {
+            if (isString(attribute))
+            {
+                this.removeAttribute(attribute);
+            }
+            else if (isArray(attribute))
+            {
+                this.removeAttributes.apply(this, attribute);
+            }
+            else
+            {
+                console.warn("ERROR: cannot remove attribute because given id is not a String. Skipping.");
+            }
+        }).bind(this)
+    );
 };
 
 /*
@@ -107,6 +177,10 @@ Element.prototype.appendChildren = function()
             {
                 this.appendChildren.apply(this, child);
             }
+            else
+            {
+                console.warn("ERROR: cannot append something except String, Text or Element as an DOMElement. Skipping.");
+            }
 		}).bind(this)
 	);
 };
@@ -122,6 +196,7 @@ Document.prototype.newElement = function()
 {
     if (typeof arguments[0] != "string")
 	{
+        console.warn("ERROR: first argument passed to newElement method is not an String. Skipping.");
 		return null;
 	}
 
@@ -144,4 +219,7 @@ Element.prototype.newChildElement = function()
     {
         this.appendChild(element);
     }
+
+    return element;
 };
+
