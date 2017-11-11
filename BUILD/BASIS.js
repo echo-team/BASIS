@@ -174,6 +174,11 @@ Element.prototype.setProperties = function(properties)
 	this.setAttributes(properties);
 };
 
+/*
+ * Appends a mass of children to DOM-Element
+ *
+ * @param {Element|Text|Array} - children to append
+ */
 Element.prototype.appendChildren = function()
 {
 	Array.from(arguments).forEach
@@ -196,6 +201,33 @@ Element.prototype.appendChildren = function()
             {
                 console.log(child);
                 console.warn("ERROR: cannot append something except String, Text or Element as an DOMElement. Skipping.");
+            }
+		}).bind(this)
+	);
+};
+
+/*
+ * Removes a mass of children to DOM-Element
+ *
+ * @param {Element|Text|Array} - children to remove
+ */
+Element.prototype.removeChildren = function()
+{
+	Array.from(arguments).forEach
+	(
+		(function (child)
+		{
+			if (isElement(child) || isText(child))
+			{
+				this.removeChild(child);
+            }
+            else if (isArray(child) && !isString(child))
+            {
+                this.removeChildren.apply(this, child);
+            }
+            else
+            {
+                console.warn("ERROR: cannot remove something except Text or Element as an DOMElement. Skipping.");
             }
 		}).bind(this)
 	);
