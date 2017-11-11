@@ -129,7 +129,7 @@ Element.prototype.setProperties = function(properties)
         console.warn("ERROR: argument passed to setEventListeners method is not an Object. Skipping");
     }
 
-    if (isObject(properties.classList))
+    if (isArray(properties.classList) || isString(properties.classList))
     {
         this.setCSS(properties.classList);
     }
