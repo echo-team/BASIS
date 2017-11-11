@@ -120,8 +120,23 @@ Element.prototype.removeAttributes = function()
  */
 Element.prototype.setProperties = function(properties)
 {
-	this.setEventListeners(properties.eventListeners);
-	this.setCSS(properties.classList);
+    if (isObject(properties.eventListeners))
+    {
+        this.setEventListeners(properties.eventListeners);
+    }
+    else if (properties.eventListeners)
+    {
+        console.warn("ERROR: argument passed to setEventListeners method is not an Object. Skipping");
+    }
+
+    if (isObject(properties.classList))
+    {
+        this.setCSS(properties.classList);
+    }
+    else if (properties.classList)
+    {
+        console.warn("ERROR: cannot set something except String or Array as an CSS-class. Skipping.");
+    }
 
 	delete properties.eventListeners;
 	delete properties.classList;
@@ -149,6 +164,7 @@ Element.prototype.appendChildren = function()
             }
             else
             {
+                console.log(child);
                 console.warn("ERROR: cannot append something except String, Text or Element as an DOMElement. Skipping.");
             }
 		}).bind(this)
@@ -164,6 +180,7 @@ Element.prototype.appendChildren = function()
  */
 Document.prototype.newElement = function()
 {
+    arguments = Array.from(arguments);
     if (typeof arguments[0] != "string")
 	{
         console.warn("ERROR: first argument passed to newElement method is not an String. Skipping.");
@@ -171,13 +188,18 @@ Document.prototype.newElement = function()
 	}
 
 	var element = document.createElement(arguments[0]);
+    arguments = arguments.slice(1);
 
-	if (arguments[1] && !isArray(arguments[1]) && !isElement(arguments[1]))
+	if (arguments[0] && !isArray(arguments[0]) && !isElement(arguments[0]) && !isString(arguments[0]))
 	{
-		element.setProperties(arguments[1]);
+		element.setProperties(arguments[0]);
+        arguments = arguments.slice(1);
 	}
 
-    element.appendChildren.apply(element, Array.from(arguments).slice(1));
+    if (arguments[0] && (isArray(arguments[0]) || isElement(arguments[0]) || isString(arguments[0])))
+    {
+        element.appendChildren.apply(element, arguments);
+    }
 
 	return element;
 };
