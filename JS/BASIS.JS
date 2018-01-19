@@ -40,6 +40,52 @@ Element.prototype.setEventListeners = function(eventListeners)
 	}
 };
 
+/*
+ * Removes event listeners to DOM-Element
+ *
+ * @param {Object} eventListeners - a mass of event listeners
+ */
+Element.prototype.removeEventListeners = function(eventListeners)
+{
+    if (!eventListeners || !isObject(eventListeners))
+    {
+        console.warn("ERROR: argument passed to setEventListeners method is not an Object. Skipping.");
+        return;
+    }
+
+    this.__events__ = this.__events__ || {};
+
+	for (var event in eventListeners)
+	{
+        if (!isArray(eventListeners[event]))
+        {
+            eventListeners[event] = [eventListeners[event]];
+        }
+
+        this.__events__[event] = this.__events__[event] || [];
+
+		eventListeners[event].forEach
+		(
+			(function(eventListener)
+			{
+                if (!isFunction(eventListener))
+                {
+                    console.warn("ERROR: cannot remove something except Function as an event listener to event, called \"" + event + "\". Skipping.");
+                    return;
+                }
+
+                console.log("SETTED");
+                var index = this.__events__[event].indexOf(eventListener);
+                if (index != -1)
+                {
+                    this.__events__[event].splice(index, 1);
+                }
+				this.removeEventListener(event, eventListener);
+			}).bind(this)
+		);
+	}
+};
+
 Element.prototype.removeCSS = function()
 {
     Array.from(arguments).forEach
