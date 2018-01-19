@@ -11,12 +11,16 @@ Element.prototype.setEventListeners = function(eventListeners)
         return;
     }
 
+    this.__events__ = this.__events__ || {};
+
 	for (var event in eventListeners)
 	{
         if (!isArray(eventListeners[event]))
         {
             eventListeners[event] = [eventListeners[event]];
         }
+
+        this.__events__[event] = this.__events__[event] || [];
 
 		eventListeners[event].forEach
 		(
@@ -27,11 +31,88 @@ Element.prototype.setEventListeners = function(eventListeners)
                     console.warn("ERROR: cannot set something except Function as an event listener to event, called \"" + event + "\". Skipping.");
                     return;
                 }
+
+                console.log("SETTED");
+                this.__events__[event].push(eventListener);
 				this.addEventListener(event, eventListener);
 			}).bind(this)
 		);
 	}
 };
+
+/*
+ * Removes event listeners to DOM-Element
+ *
+ * @param {Object} eventListeners - a mass of event listeners
+ */
+Element.prototype.removeEventListeners = function(eventListeners)
+{
+    if (!eventListeners || !isObject(eventListeners))
+    {
+        console.warn("ERROR: argument passed to setEventListeners method is not an Object. Skipping.");
+        return;
+    }
+
+    this.__events__ = this.__events__ || {};
+
+	for (var event in eventListeners)
+	{
+        if (!isArray(eventListeners[event]))
+        {
+            eventListeners[event] = [eventListeners[event]];
+        }
+
+        this.__events__[event] = this.__events__[event] || [];
+
+		eventListeners[event].forEach
+		(
+			(function(eventListener)
+			{
+                if (!isFunction(eventListener))
+                {
+                    console.warn("ERROR: cannot remove something except Function as an event listener to event, called \"" + event + "\". Skipping.");
+                    return;
+                }
+
+                console.log("SETTED");
+                var index = this.__events__[event].indexOf(eventListener);
+                if (index != -1)
+                {
+                    this.__events__[event].splice(index, 1);
+                }
+				this.removeEventListener(event, eventListener);
+			}).bind(this)
+		);
+	}
+};
+
+/**
+ * Clones DOMElement
+ * @param {Object} properties            - settings for cloning
+ * @param {Boolean} properties.listeners - if true then DOMElement will be cloned with event listeners
+ * @param {Boolean} properties.deep      - if true then DOMElement will be cloned with CSS and children
+ */
+Element.prototype.cloneElement = function(properties)
+{
+    var element;
+
+    if (properties.deep)
+    {
+        element = this.cloneNode(true);
+    }
+    else
+    {
+        element = this.cloneNode(true);
+    }
+
+    if (properties.listeners)
+    {
+        element.__events__ = this.__events__;
+        element.setEventListeners(element.__events__);
+    }
+
+    return element;
+}
 
 Element.prototype.removeCSS = function()
 {
