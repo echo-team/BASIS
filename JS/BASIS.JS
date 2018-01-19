@@ -86,6 +86,34 @@ Element.prototype.removeEventListeners = function(eventListeners)
 	}
 };
 
+/**
+ * Clones DOMElement
+ * @param {Object} properties            - settings for cloning
+ * @param {Boolean} properties.listeners - if true then DOMElement will be cloned with event listeners
+ * @param {Boolean} properties.deep      - if true then DOMElement will be cloned with CSS and children
+ */
+Element.prototype.cloneElement = function(properties)
+{
+    var element;
+
+    if (properties.deep)
+    {
+        element = this.cloneNode(true);
+    }
+    else
+    {
+        element = this.cloneNode(true);
+    }
+
+    if (properties.listeners)
+    {
+        element.__events__ = this.__events__;
+        element.setEventListeners(element.__events__);
+    }
+
+    return element;
+}
+
 Element.prototype.removeCSS = function()
 {
     Array.from(arguments).forEach
