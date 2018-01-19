@@ -11,12 +11,16 @@ Element.prototype.setEventListeners = function(eventListeners)
         return;
     }
 
+    this.__events__ = this.__events__ || {};
+
 	for (var event in eventListeners)
 	{
         if (!isArray(eventListeners[event]))
         {
             eventListeners[event] = [eventListeners[event]];
         }
+
+        this.__events__[event] = this.__events__[event] || [];
 
 		eventListeners[event].forEach
 		(
@@ -27,6 +31,9 @@ Element.prototype.setEventListeners = function(eventListeners)
                     console.warn("ERROR: cannot set something except Function as an event listener to event, called \"" + event + "\". Skipping.");
                     return;
                 }
+
+                console.log("SETTED");
+                this.__events__[event].push(eventListener);
 				this.addEventListener(event, eventListener);
 			}).bind(this)
 		);
