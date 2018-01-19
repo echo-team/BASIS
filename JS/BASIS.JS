@@ -32,7 +32,6 @@ Element.prototype.setEventListeners = function(eventListeners)
                     return;
                 }
 
-                console.log("SETTED");
                 this.__events__[event].push(eventListener);
 				this.addEventListener(event, eventListener);
 			}).bind(this)
@@ -74,7 +73,6 @@ Element.prototype.removeEventListeners = function(eventListeners)
                     return;
                 }
 
-                console.log("SETTED");
                 var index = this.__events__[event].indexOf(eventListener);
                 if (index != -1)
                 {
