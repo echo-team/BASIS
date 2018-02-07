@@ -32,7 +32,7 @@ Element.prototype.setEventListeners = function(eventListeners)
                     return;
                 }
 
-                if (event == "resize" && this.tagName != "IFRAME")
+                if (event == "resize" && this.tagName != "IFRAME" && this.__events__.resize && !this.__events__.resize.length)
                 {
                     var iframe = this.newChildElement("iframe", {style: "WIDTH:100%;HEIGHT:100%;", name: "BASIS__ONRESIZE"});
                     iframe.contentWindow.onresize = (function()
