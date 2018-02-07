@@ -34,8 +34,8 @@ Element.prototype.setEventListeners = function(eventListeners)
 
                 if (event == "resize" && this.tagName != "IFRAME" && this.__events__.resize && !this.__events__.resize.length)
                 {
-                    var iframe = this.newChildElement("iframe", {style: "WIDTH:100%;HEIGHT:100%;", name: "BASIS__ONRESIZE"});
-                    iframe.contentWindow.onresize = (function()
+                    this.__resizer__ = this.newChildElement("iframe", {style: "WIDTH:100%;HEIGHT:100%;", name: "BASIS__RESIZER"});
+                    this.__resizer__.contentWindow.onresize = (function()
                     {
                         this.dispatchEvent(new Event("resize"));
                     }).bind(this);
@@ -86,6 +86,10 @@ Element.prototype.removeEventListeners = function(eventListeners)
                 if (index != -1)
                 {
                     this.__events__[event].splice(index, 1);
+                    if (event == "resize" && !this.__events__[event].length)
+                    {
+                        this.removeChildren(this.__resizer__);
+                    }
                 }
 				this.removeEventListener(event, eventListener);
 			}).bind(this)
