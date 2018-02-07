@@ -34,7 +34,7 @@ Element.prototype.setEventListeners = function(eventListeners)
 
                 if (event == "resize" && this.tagName != "IFRAME" && this.__events__.resize && !this.__events__.resize.length)
                 {
-                    this.__resizer__ = this.newChildElementBefore(this.children[0], "iframe", {style: "WIDTH:100%;HEIGHT:100%;POSITION:ABSOLUTE;OPACITY:1;", name: "BASIS__RESIZER"});
+                    this.__resizer__ = this.newChildElementBefore(this.children[0], "iframe", {style: "WIDTH:100%;HEIGHT:100%;POSITION:ABSOLUTE;OPACITY:0;", name: "BASIS__RESIZER"});
                     this.__resizer__.contentWindow.onresize = (function()
                     {
                         this.dispatchEvent(new Event("resize"));
