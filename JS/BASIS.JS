@@ -304,6 +304,7 @@ Element.prototype.removeChildren = function()
  */
 Document.prototype.newElement = function()
 {
+    console.log(arguments);
     arguments = Array.from(arguments);
     if (typeof arguments[0] != "string")
 	{
@@ -334,6 +335,18 @@ Element.prototype.newChildElement = function()
     if (element)
     {
         this.appendChild(element);
+    }
+
+    return element;
+};
+
+Element.prototype.newChildElementBefore = function()
+{
+    var element = document.newElement.apply(null, Array.from(arguments).splice(1, arguments.length - 1));
+    if (element)
+    {
+        console.log(arguments[0]);
+        this.insertBefore(element, arguments[0]);
     }
 
     return element;
