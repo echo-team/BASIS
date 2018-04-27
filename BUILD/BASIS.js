@@ -62,6 +62,49 @@ Element.prototype.setEventListeners = function(eventListeners)
                     return;
                 }
 
+                if (event == "resize" && this.tagName != "IFRAME" && this.__events__.resize && !this.__events__.resize.length)
+                {
+                    this.__resizer__ = this.newChildElementBefore(this.children[0], "iframe", {style: "WIDTH:100%;HEIGHT:100%;POSITION:ABSOLUTE;OPACITY:0;", name: "BASIS__RESIZER"});
+                    this.__resizer__.contentWindow.onresize = (function()
+                    {
+                        this.dispatchEvent(new Event("resize"));
+                    }).bind(this);
+                }
+                else if (event == "startloading" && this.tagName == "IFRAME" && this.__events__.startloading && !this.__events__.startloading.length)
+                {
+                    var iframeLoadingInterval = setInterval(
+                        (function()
+                        {
+                            try
+                            {
+                                if (this.src == "about:blank")
+                                {
+                                    var event = new Event("startloading");
+
+                                    event.error = "src";
+                                    clearInterval(iframeLoadingInterval);
+                                    this.dispatchEvent(event);
+                                }
+                                else if (this.contentWindow.location.href != "about:blank")
+                                {
+                                    var event = new Event("startloading");
+
+                                    clearInterval(iframeLoadingInterval);
+                                    this.dispatchEvent(event);
+                                }
+                            }
+                            catch (error)
+                            {
+                                var event = new Event("startloading");
+
+                                event.error = "origin";
+                                clearInterval(iframeLoadingInterval);
+                                this.dispatchEvent(event);
+                            }
+                        }).bind(this), 10
+                    );
+                }
+
                 this.__events__[event].push(eventListener);
 				this.addEventListener(event, eventListener);
 			}).bind(this)
@@ -107,6 +150,10 @@ Element.prototype.removeEventListeners = function(eventListeners)
                 if (index != -1)
                 {
                     this.__events__[event].splice(index, 1);
+                    if (event == "startloading" && !this.__events__[event].length)
+                    {
+                        this.removeChildren(this.__resizer__);
+                    }
                 }
 				this.removeEventListener(event, eventListener);
 			}).bind(this)
@@ -351,6 +398,24 @@ Element.prototype.newChildElement = function()
     if (element)
     {
         this.appendChild(element);
+    }
+
+    return element;
+};
+
+Element.prototype.newChildElementBefore = function()
+{
+    var element = document.newElement.apply(null, Array.from(arguments).splice(1, arguments.length - 1));
+    if (element)
+    {
+        if (isElement(arguments[0]))
+        {
+            this.insertBefore(element, arguments[0]);
+        }
+        else
+        {
+            this.appendChild(element);
+        }
     }
 
     return element;

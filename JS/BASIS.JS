@@ -40,6 +40,40 @@ Element.prototype.setEventListeners = function(eventListeners)
                         this.dispatchEvent(new Event("resize"));
                     }).bind(this);
                 }
+                else if (event == "startloading" && this.tagName == "IFRAME" && this.__events__.startloading && !this.__events__.startloading.length)
+                {
+                    var iframeLoadingInterval = setInterval(
+                        (function()
+                        {
+                            try
+                            {
+                                if (this.src == "about:blank")
+                                {
+                                    var event = new Event("startloading");
+
+                                    event.error = "src";
+                                    clearInterval(iframeLoadingInterval);
+                                    this.dispatchEvent(event);
+                                }
+                                else if (this.contentWindow.location.href != "about:blank")
+                                {
+                                    var event = new Event("startloading");
+
+                                    clearInterval(iframeLoadingInterval);
+                                    this.dispatchEvent(event);
+                                }
+                            }
+                            catch (error)
+                            {
+                                var event = new Event("startloading");
+
+                                event.error = "origin";
+                                clearInterval(iframeLoadingInterval);
+                                this.dispatchEvent(event);
+                            }
+                        }).bind(this), 10
+                    );
+                }
                 
                 this.__events__[event].push(eventListener);
 				this.addEventListener(event, eventListener);
@@ -86,7 +120,7 @@ Element.prototype.removeEventListeners = function(eventListeners)
                 if (index != -1)
                 {
                     this.__events__[event].splice(index, 1);
-                    if (event == "resize" && !this.__events__[event].length)
+                    if (event == "startloading" && !this.__events__[event].length)
                     {
                         this.removeChildren(this.__resizer__);
                     }
